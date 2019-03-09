@@ -1,17 +1,24 @@
 <template>
-  <div id="map">
-    <!-- <p style="width:200px;height:200px;background:blue">hello</p> -->
+  <div id="map" @click="handleClick" @pointermove="handlePointMove">
   </div>
 </template>
 
 <script>
+
 import Map from 'ol/Map'
 import View from 'ol/View'
 import TileLayer from 'ol/layer/Tile'
 import XYZ from 'ol/source/XYZ'
-// import 'ol/ol.css'
+import 'ol/ol.css'
+// import Feature from 'ol/Feature.js'
 export default {
   name: 'FaceMap',
+  data() {
+    return {
+      map: '',
+      position: [499, 166]
+    }
+  },
   mounted() {
     this.initMap()
   },
@@ -25,15 +32,14 @@ export default {
     },
     initMap() {
       var _this = this
-      new Map({
+      var nanjing = this.$ol.proj.fromLonLat([118.792819, 32.053766])
+      this.map = new Map({
         target: 'map',
         layers: [
           new TileLayer({
             source: new XYZ({
               tileUrlFunction: function(tileCoord) {
-                console.info(tileCoord)
                 var x = 'C' + _this.zeroPad(tileCoord[1], 8, 16)
-                console.info(x)
                 var y = 'R' + _this.zeroPad(-tileCoord[2] - 1, 8, 16)
                 var z = 'L' + _this.zeroPad(tileCoord[0], 2, 10)
                 return 'http://10.45.157.117:8090/MAP' + '/' + z + '/' + y + '/' + x + '.png'
@@ -42,11 +48,35 @@ export default {
           })
         ],
         view: new View({
-          center: this.$ol.proj.transform([106.227256, 38.486691], 'EPSG:4326', 'EPSG:3857'),
+          center: nanjing,
           zoom: 11,
           minZoom: 5
         })
       })
+      this.setIcon(this.position)
+    },
+    setIcon(position) {
+      this.imgdiv = document.createElement('div')
+      var img = document.createElement('img')
+      img.style.width = '36px'
+      img.style.height = '36px'
+      img.src = 'dot.png'
+      this.imgdiv.appendChild(img)
+      new this.$ol.Overlay({
+        position: this.position,
+        positioning: 'map',
+        element: this.imgdiv,
+        stopEvent: false
+      })
+    },
+    handleClick(evt) {
+      var _this = this
+      var pixel = _this.map.getEventPixel(evt)
+      console.info(pixel)
+    },
+    handlePointMove(evt) {
+      // var _this = this
+      // var pixel = _this.map.getEventPixel(evt)
     }
   }
 }

@@ -1,11 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import FaceMap from '@/layout/faceMap.vue'
-
+import BigPic from '@/layout/bigPic'
 Vue.use(Router)
 
 const router = new Router({
-  // mode: 'history',
   routes: [
     {
       path: '/',
@@ -14,6 +13,10 @@ const router = new Router({
     {
       path: '*',
       component: FaceMap
+    },
+    {
+      path: '/bigPic',
+      component: BigPic
     }
   ]
 })
